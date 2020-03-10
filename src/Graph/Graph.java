@@ -9,7 +9,8 @@ public class Graph {
 
 
     // Constructor
-    Graph(int v) {
+    Graph(int v) throws IndexOutOfBoundsException {
+        if(v<0){ throw  new IndexOutOfBoundsException() ;   }
         try {
             V = v;
             this.isConnected = true ;// by default set true
@@ -37,7 +38,7 @@ public class Graph {
     * */
     public void addEdge(int source , int destination , int componentNumber){
          this.adjecencyList[source].add(new Node(source , destination , componentNumber)) ;
-         this.adjecencyList[destination].add(new Node(source , source, componentNumber)) ;
+         this.adjecencyList[destination].add(new Node(destination , source, componentNumber)) ;
     }
 
     public void setConnected(boolean connected) {
