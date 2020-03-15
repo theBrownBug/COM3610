@@ -1,11 +1,14 @@
 package Graph;
 
+import java.util.Collections;
+import java.util.LinkedList;
+
 public class VertexDeletion {
     private Graph graph ;
     private boolean isConnected ;
     private int numberOfComponents ;
     private int maximumComponentSize ;
-    boolean solutionExists;
+    int numberOfVerticesToBeDeleted = 0 ;
 
     public VertexDeletion(Graph graph , int componentSize) throws NullPointerException, IndexOutOfBoundsException{
         if(componentSize<1){
@@ -13,22 +16,20 @@ public class VertexDeletion {
         }
 
         if(graph==null){ throw new NullPointerException() ; }
-        this.solutionExists = false ; // by default
+        //this.solutionExists = false ; // by default
         this.maximumComponentSize = componentSize ;
         this.graph = graph ;
-        graph.DFS();
+        graph.initialiseDFS();
         this.isConnected = graph.isConnected() ;
         this.numberOfComponents = graph.getCurrentNumberOfComponents() ;
     }
 
 
     public void trivialCheck(){
-        if(this.graph.getV()<= getComponentSize()){
-            this.solutionExists = true ;
-        }
+
     }
-    public void solution() throws NullPointerException{
-        if(this.graph == null){
+    public int solution(Graph graph , int c) throws NullPointerException{
+        if(graph == null){
             throw new NullPointerException("The graph is empty");
         }
 
@@ -37,18 +38,81 @@ public class VertexDeletion {
         * the maximumComponentSize > the number of vertices, the solution already exists
         *
         */
-        trivialCheck();
-        if(this.solutionExists){ return; }
+        if(this.graph.getV()<= c){ return 0 ; }
+        if(c<=0){
+            return Integer.MIN_VALUE ;
+        }
 
-        if(!this.isConnected) {
+        if(!graph.isConnected()) {
+            int sum = 0 ;
             for (int counter = 1; counter <= this.numberOfComponents; counter++) {
                 // compute for different components
+                int min = Integer.MAX_VALUE , max = Integer.MIN_VALUE ;
+                for(Node n : graph.nodes){
+                    if(n.getComponentNumber()==counter){
+                        if(n.getVertexNumber()<min){
+                            min = n.getVertexNumber() ;
+                        }
+                        if(n.getComponentNumber()>max){
+                            max = n.getVertexNumber() ;
+                        }
+                    }
 
+                }
+                Graph subGraph = new Graph(graph.getV() , min , max , counter) ;
+                if(subGraph.nodes.size()<=c){
+                    continue;
+                }
+                Collections.sort(subGraph.nodes , new SortByDegree());
+                boolean notFound = true ;
+                int nodesDeleted  = 0 ;
+                while(notFound){
+                    for(Node n: subGraph.nodes){
+                        subGraph.removeVertex(n.getVertexNumber());
+                        nodesDeleted+=1 ;
+                        int maximum_componentSize = Integer.MIN_VALUE ;
+                        for(LinkedList<Node>connectedNodeList: subGraph.getAdjecencyList()){
+                            if(connectedNodeList!=null){
+                                if(connectedNodeList.size()>maximum_componentSize){
+                                    maximum_componentSize =connectedNodeList.size() ;
+                                }
+                            }
+                        }
+                        if(maximum_componentSize<=c){
+                            sum+=nodesDeleted ;
+                            notFound=false ;
+                            break ;
+                        }
+                    }
+                }
             }
+            return sum ;
         }
         else{
             // component for only one connected component
+            Collections.sort(graph.nodes , new SortByDegree());
 
+            boolean notFound = true ;
+            int nodesDeleted  = 0 ;
+            while(notFound){
+                for(Node n: graph.nodes){
+                    graph.removeVertex(n.getVertexNumber());
+                    nodesDeleted+=1 ;
+                    int maximum_componentSize = Integer.MIN_VALUE ;
+                    for(LinkedList<Node>connectedNodeList: graph.getAdjecencyList()){
+                        if(connectedNodeList!=null){
+                            if(connectedNodeList.size()>maximum_componentSize){
+                                maximum_componentSize =connectedNodeList.size() ;
+                            }
+                        }
+                    }
+                    if(maximum_componentSize<=c){
+                        notFound=false ;
+                        break ;
+                    }
+                }
+            }
+            return nodesDeleted ;
         }
 
     }
@@ -61,6 +125,16 @@ public class VertexDeletion {
     public void setNumberOfComponents(int numberOfComponents) { this.numberOfComponents = numberOfComponents; }
     public int getComponentSize() { return maximumComponentSize; }
     public void setComponentSize(int componentSize) { this.maximumComponentSize = componentSize; }
-    public boolean isSolutionExists() { return solutionExists; }
-    public void setSolutionExists(boolean solutionExists) { this.solutionExists = solutionExists; }
+
+    public static void main(String args[]){
+
+        Graph graph = new Graph(5) ;
+        VertexDeletion instance = new VertexDeletion(graph , 1) ;
+        graph.addEdge(1,  0 , 0);
+        //graph.addEdge(1 ,2 , 0);
+        graph.addEdge(2, 3 , 0);
+        graph.addEdge(3, 4 , 0);
+        graph.initialiseDFS();
+        System.out.println(instance.solution(graph , 2));
+    }
 }
