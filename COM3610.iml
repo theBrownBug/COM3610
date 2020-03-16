@@ -7,7 +7,7 @@
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
-    <orderEntry type="library" name="Maven: Arquillian JUnit:Release" level="project" />
     <orderEntry type="library" name="org.jgrapht:jgrapht-core:1.4.0" level="project" />
+    <orderEntry type="library" name="junit:junit:4.13" level="project" />
   </component>
 </module>

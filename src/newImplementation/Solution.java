@@ -11,7 +11,7 @@ import org.jgrapht.traverse.DepthFirstIterator;
 import java.io.*;
 import java.net.*;
 import java.util.*;
-class Solution {
+public class Solution {
     private static int DEFAULT_NUMBER_OF_NODES = 8;
 
 

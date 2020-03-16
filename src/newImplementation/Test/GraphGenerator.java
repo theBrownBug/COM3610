@@ -1,5 +1,4 @@
-package Test;
-
+package newImplementation.Test;
 import org.jgrapht.Graph;
 import org.jgrapht.generate.GnmRandomGraphGenerator;
 import org.jgrapht.graph.DefaultEdge;
