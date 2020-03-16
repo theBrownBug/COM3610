@@ -11,7 +11,7 @@ import java.io.*;
 import java.net.*;
 import java.util.*;
 class Solution {
-    private static int DEFAULT_NUMBER_OF_NODES = 6;
+    private static int DEFAULT_NUMBER_OF_NODES = 8;
 
 
     /**
@@ -22,48 +22,70 @@ class Solution {
      * */
 
     public static int computeSolution(Graph<Integer, DefaultEdge> graph, int c) {
-        if (!isConnected(graph)) {
-            int sum = 0;
+        if (isConnected(graph)) {
+            if (graph.vertexSet().size() <= c) {
+                //return sum;
+               return 0;
+            }
+
+            /*
+            // gets all the possible combination of vertices that get
+            //List<Set<Integer>> allPossibleSubsets = getSubsets(new ArrayList<>(graph.vertexSet()), c + 1);
+            for (Set<Integer> set : allPossibleSubsets) {
+                List<Integer> list = new ArrayList<>(set);
+                Graph<Integer, DefaultEdge> duplicate = createDuplicate(graph);
+                Collections.sort(list, new VertexDegreeComparator(duplicate, VertexDegreeComparator.Order.DESCENDING));
+
+                for (Integer i : list) {
+
+                    if (duplicate.removeVertex(i)) {
+                        if (computeSolution(duplicate, c) < min) {
+                            //sum++;
+                            min = computeSolution(duplicate, c);
+                        }
+                    }
+                }
+            }*/
+
+            //Graph<Integer, DefaultEdge> duplicate = createDuplicate(graph);
+            //List<Integer> vertexList =new ArrayList<>(duplicate.vertexSet()) ;
+            //Collections.sort(vertexList , new VertexDegreeComparator(duplicate, VertexDegreeComparator.Order.DESCENDING));
+            //for(int counter = 0 ; counter<c+1 ; counter++){
+             //   if(duplicate.removeVertex(vertexList.get(0))){
+
+               //     if( computeSolution(duplicate , c)  < min){
+                   //     min = 1+ computeSolution(duplicate , c) ;
+                 //   }
+                //}
+            //}
+            List<Integer> vertexList = returnConnectedVertices(graph , c +1) ;
+            int min = Integer.MAX_VALUE;
+            for(Integer i : vertexList){
+                Graph<Integer, DefaultEdge> duplicate = createDuplicate(graph);
+                if(duplicate.removeVertex(i)){
+                    int sol = 1+ computeSolution(duplicate , c);
+                    if(sol<min){
+                        min = sol ;
+                    }
+                }
+            }
+
+            return min;
+
+        } else {
+
+
+
             BiconnectivityInspector<Integer, DefaultEdge> inspector = new BiconnectivityInspector<>(graph);
+            int sum = 0;
             for (Graph<Integer, DefaultEdge> component : inspector.getConnectedComponents()) {
+
                 if (component.vertexSet().size() > c) {
                     sum += computeSolution(component, c);
                 }
             }
             return sum;
-        } else {
-            if (graph.vertexSet().size() <= c) {
-                return 0;
-            }
-            int min = Integer.MAX_VALUE;
 
-            // gets all the possible combination of vertices that get
-            List<Set<Integer>> allPossibleSubsets = getSubsets(new ArrayList<>(graph.vertexSet()) , c+1) ;
-            for(Set<Integer> set:allPossibleSubsets){
-                List<Integer> list = new ArrayList<>(set);
-                Graph<Integer , DefaultEdge> duplicate = createDuplicate(graph) ;
-                Collections.sort(list, new VertexDegreeComparator(duplicate, VertexDegreeComparator.Order.DESCENDING));
-                for(Integer i : list){
-                    if(duplicate.removeVertex(i)){
-                        if(computeSolution(duplicate , c)<min){
-                            min = computeSolution(duplicate , c) ;
-                        }
-                    }
-                }
-            }
-            /*
-            List<Integer> list = new ArrayList<>(graph.vertexSet());
-            Collections.sort(list, new VertexDegreeComparator(graph, VertexDegreeComparator.Order.DESCENDING));
-            for (Integer i : list) {
-                if (graph.removeVertex(i)) {
-                    min += 1;
-                    if (computeSolution(graph, c) < min) {
-                        min += computeSolution(graph, c);
-                    }
-                }
-            }
-            */
-            return min;
 
         }
     }
@@ -73,9 +95,12 @@ class Solution {
         Graph<Integer , DefaultEdge> duplicate  = new SimpleGraph<>(DefaultEdge.class);
         for(Integer i: graph.vertexSet()){
             duplicate.addVertex(i) ;
+
         }
-        for(int i : graph.vertexSet()) {
-            for (int counter = 1; counter <= graph.vertexSet().size(); counter++) {
+
+
+        for(int i : duplicate.vertexSet()) {
+            for (int counter = 0; counter < duplicate.vertexSet().size() + i; counter++) {
                 if (graph.containsEdge(i, counter)) {
                     duplicate.addEdge(i, counter);
                 }
@@ -106,9 +131,14 @@ class Solution {
             sampleGraph.addVertex(counter);
         }
         sampleGraph.addEdge(0, 1);
-        sampleGraph.addEdge(2, 3);
-        sampleGraph.addEdge(3, 4);
-        sampleGraph.addEdge(4, 5);
+        for(int counter = 2 ; counter<DEFAULT_NUMBER_OF_NODES - 1 ; counter++){
+            sampleGraph.addEdge(counter , counter+1) ;
+        }
+        /*
+        for(DefaultEdge e: sampleGraph.edgeSet()){
+            System.out.println(e);
+        }
+         */
         return sampleGraph;
     }
 
@@ -156,6 +186,54 @@ class Solution {
         }catch (Exception e){
             System.out.println(e);
         }
+    }
+
+    /**
+     * c = c+1 ;
+     *
+     * */
+    public static ArrayList<Integer> returnConnectedVertices(Graph<Integer , DefaultEdge> graph, int c){
+        if(isConnected(graph)){
+            if(graph.vertexSet().size()<c){
+                return null ;
+            }else{
+                int counter= 0 ;
+                List<Integer> toReturn = new ArrayList<>() ;
+                Iterator<Integer> dfsIterator = new DepthFirstIterator<>(graph) ;
+                while(dfsIterator.hasNext()){
+                    Integer i = dfsIterator.next() ;
+                    if(counter<c){
+                        toReturn.add(i);
+                        counter++ ;
+                    }
+                    else{
+                        break ;
+                    }
+                }
+                return (ArrayList<Integer>) toReturn ;
+            }
+        }else{
+            BiconnectivityInspector<Integer , DefaultEdge> inspector = new BiconnectivityInspector(graph);
+            for(Graph<Integer , DefaultEdge> g : inspector.getConnectedComponents()){
+                if(g.vertexSet().size()>c){
+                    int counter= 0 ;
+                    List<Integer> toReturn = new ArrayList<>() ;
+                    Iterator<Integer> dfsIterator = new DepthFirstIterator<>(graph) ;
+                    while(dfsIterator.hasNext()){
+                        Integer i = dfsIterator.next() ;
+                        if(counter<c){
+                            toReturn.add(i);
+                            counter++;
+                        }
+                        else{
+                            break ;
+                        }
+                    }
+                    return (ArrayList<Integer>) toReturn;
+                }
+            }
+        }
+        return null ;
     }
 
 }
