@@ -4,6 +4,7 @@ import org.jgrapht.*;
 import org.jgrapht.alg.connectivity.BiconnectivityInspector;
 import org.jgrapht.alg.interfaces.StrongConnectivityAlgorithm;
 import org.jgrapht.alg.util.VertexDegreeComparator;
+import org.jgrapht.generate.GnmRandomGraphGenerator;
 import org.jgrapht.graph.*;
 import org.jgrapht.traverse.DepthFirstIterator;
 
@@ -17,7 +18,7 @@ class Solution {
     /**
      * Look at methods to duplicate graphs ()
      *
-     *  variables not getting updated
+     *
      *
      * */
 
@@ -27,37 +28,6 @@ class Solution {
                 //return sum;
                return 0;
             }
-
-            /*
-            // gets all the possible combination of vertices that get
-            //List<Set<Integer>> allPossibleSubsets = getSubsets(new ArrayList<>(graph.vertexSet()), c + 1);
-            for (Set<Integer> set : allPossibleSubsets) {
-                List<Integer> list = new ArrayList<>(set);
-                Graph<Integer, DefaultEdge> duplicate = createDuplicate(graph);
-                Collections.sort(list, new VertexDegreeComparator(duplicate, VertexDegreeComparator.Order.DESCENDING));
-
-                for (Integer i : list) {
-
-                    if (duplicate.removeVertex(i)) {
-                        if (computeSolution(duplicate, c) < min) {
-                            //sum++;
-                            min = computeSolution(duplicate, c);
-                        }
-                    }
-                }
-            }*/
-
-            //Graph<Integer, DefaultEdge> duplicate = createDuplicate(graph);
-            //List<Integer> vertexList =new ArrayList<>(duplicate.vertexSet()) ;
-            //Collections.sort(vertexList , new VertexDegreeComparator(duplicate, VertexDegreeComparator.Order.DESCENDING));
-            //for(int counter = 0 ; counter<c+1 ; counter++){
-             //   if(duplicate.removeVertex(vertexList.get(0))){
-
-               //     if( computeSolution(duplicate , c)  < min){
-                   //     min = 1+ computeSolution(duplicate , c) ;
-                 //   }
-                //}
-            //}
             List<Integer> vertexList = returnConnectedVertices(graph , c +1) ;
             int min = Integer.MAX_VALUE;
             for(Integer i : vertexList){
@@ -235,5 +205,8 @@ class Solution {
         }
         return null ;
     }
+
+
+
 
 }
