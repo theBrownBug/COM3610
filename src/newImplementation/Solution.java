@@ -30,14 +30,18 @@ public class Solution {
             }
             List<Integer> vertexList = returnConnectedVertices(graph , c +1) ;
             int min = Integer.MAX_VALUE;
-            for(Integer i : vertexList){
-                Graph<Integer, DefaultEdge> duplicate = createDuplicate(graph);
-                if(duplicate.removeVertex(i)){
-                    int sol = 1+ computeSolution(duplicate , c);
-                    if(sol<min){
-                        min = sol ;
+            if(vertexList!=null) {
+                for (Integer i : vertexList) {
+                    Graph<Integer, DefaultEdge> duplicate = createDuplicate(graph);
+                    if (duplicate.removeVertex(i)) {
+                        int sol = 1 + computeSolution(duplicate, c);
+                        if (sol < min) {
+                            min = sol;
+                        }
                     }
                 }
+            }else{
+                System.out.println("Vertex set is null");
             }
 
             return min;
@@ -114,31 +118,31 @@ public class Solution {
 
 
 
-    //===================================================================================================================================
-
-    private static void getSubsets(List<Integer> superSet, int k, int idx, Set<Integer> current,List<Set<Integer>> solution) {
-        //successful stop clause
-        if (current.size() == k) {
-            solution.add(new HashSet<>(current));
-            return;
-        }
-        //unseccessful stop clause
-        if (idx == superSet.size()) return;
-        Integer x = superSet.get(idx);
-        current.add(x);
-        //"guess" x is in the subset
-        getSubsets(superSet, k, idx+1, current, solution);
-        current.remove(x);
-        //"guess" x is not in the subset
-        getSubsets(superSet, k, idx+1, current, solution);
-    }
-
-    public static List<Set<Integer>> getSubsets(List<Integer> superSet, int k) {
-        List<Set<Integer>> res = new ArrayList<>();
-        getSubsets(superSet, k, 0, new HashSet<Integer>(), res);
-        return res;
-    }
-
+//    //===================================================================================================================================
+//
+//    private static void getSubsets(List<Integer> superSet, int k, int idx, Set<Integer> current,List<Set<Integer>> solution) {
+//        //successful stop clause
+//        if (current.size() == k) {
+//            solution.add(new HashSet<>(current));
+//            return        ;
+//        }
+//        //unseccessful stop clause
+//        if (idx == superSet.size()) return;
+//        Integer x = superSet.get(idx);
+//        current.add(x);
+//        //"guess" x is in the subset
+//        getSubsets(superSet, k, idx+1, current, solution);
+//        current.remove(x);
+//        //"guess" x is not in the subset
+//        getSubsets(superSet, k, idx+1, current, solution);
+//    }
+//
+//    public static List<Set<Integer>> getSubsets(List<Integer> superSet, int k) {
+//        List<Set<Integer>> res = new ArrayList<>();
+//        getSubsets(superSet, k, 0, new HashSet<Integer>(), res);
+//        return res;
+//    }
+//
 
 
     //===================================================================================================================================
@@ -169,7 +173,12 @@ public class Solution {
             }else{
                 int counter= 0 ;
                 List<Integer> toReturn = new ArrayList<>() ;
-                Iterator<Integer> dfsIterator = new DepthFirstIterator<>(graph) ;
+
+                // find the first element in the graph(smallest int according to our labelling ) to start dfs on
+                Integer min = Integer.MAX_VALUE ;
+                for (Integer i: graph.vertexSet()){ if(i<min){min = i ;}}
+                Iterator<Integer> dfsIterator = new DepthFirstIterator<>(graph, min) ;
+
                 while(dfsIterator.hasNext()){
                     Integer i = dfsIterator.next() ;
                     if(counter<c){
@@ -200,6 +209,9 @@ public class Solution {
                         }
                     }
                     return (ArrayList<Integer>) toReturn;
+                }
+                else{
+                    return null ; // the size of array is small than c , trivial solution exists
                 }
             }
         }
