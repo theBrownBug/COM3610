@@ -87,27 +87,6 @@ public class TestBaseAlgorithm {
     }
 
 
-    @Test
-
-    /**
-     * graph: ( ',' represents disconnected components )
-     * 0 - 1 - 2 - 3 ,
-     * 4 - 5 - 6 - 7
-     *
-     * Worked
-     * */
-    public void TestThree(){
-        Graph<Integer , DefaultEdge> sampleGraph = new SimpleGraph<>(DefaultEdge.class);
-        TestBaseAlgorithm.addVertex(sampleGraph , 8);
-        for(int counter = 0 ; counter < 3 ; counter++){
-            sampleGraph.addEdge(counter ,  counter+1) ;
-        }
-        for(int counter = 4 ; counter<7 ; counter++){
-            sampleGraph.addEdge(counter , counter+1) ;
-        }
-        assertEquals(2 , Solution.computeSolution(sampleGraph , 2));
-    }
-
     public static void addVertex(Graph<Integer, DefaultEdge> graph , int limit){
         for(int counter =0 ; counter< limit ; counter++){
             graph.addVertex(counter) ;
@@ -137,8 +116,8 @@ public class TestBaseAlgorithm {
      * c = 4 , D = 0 (if c = vertex set size(in this case 4) , the deletion set should be empty)
      * */
     @Test
-    public void varyComponentSizeUseOneInstanceOfConnectedGraphAndOrientation(){
-        // make a simple linear graph
+    public void varyComponentSizeConnectedLinearGraph(){
+        // make a simple connected linear graph
         Graph<Integer , DefaultEdge> sample = new SimpleGraph<>(DefaultEdge.class) ;
         /*
         * graph sample :
@@ -158,6 +137,41 @@ public class TestBaseAlgorithm {
         }
     }
 
+
+    /**
+     * make a simple linear disconnected graph
+     * Graph instance presented : ( ',' represents disconnected components )
+     *  0 - 1 - 2 - 3,
+     *  4 - 5 - 6 - 7
+     *
+     * Minimum Deletion sets for different component sizes:
+     * Precomputed minimum Deletion Set sizes for various component sizes
+     *
+     * c = 0 , D = 8
+     * c = 1 , D = 4
+     * c = 2 , D = 2
+     * c = 3 , D = 2
+     * c = 4 = D = 0
+     * */
+    @Test
+    public void varyComponentSizeDisconnectedLinearGraph(){
+        Graph<Integer , DefaultEdge> graph = new SimpleGraph<>(DefaultEdge.class) ;
+        addVertex(graph , 8);
+        for(int counter = 0 ; counter < 3 ; counter++){ graph.addEdge(counter , counter+1) ; }
+        for(int counter = 4 ; counter< 7 ; counter++){ graph.addEdge(counter , counter+1) ; }
+        ArrayList<Integer> precomputedMinimumDeletionSets = new ArrayList<>() ;
+        precomputedMinimumDeletionSets.add(8) ;
+        precomputedMinimumDeletionSets.add(4) ;
+        precomputedMinimumDeletionSets.add(2) ;
+        precomputedMinimumDeletionSets.add(2) ;
+        precomputedMinimumDeletionSets.add(0) ;
+        for(int counter = 0 ; counter< precomputedMinimumDeletionSets.size()  ; counter++){
+            assertEquals((int)precomputedMinimumDeletionSets.get(counter) , Solution.computeSolution(graph, counter));
+        }
+
+
+    }
+
     /**
      * In this case, the graph is complete, connected and contains vertices(0 , 1 , 2 , 3)
      * The component size has been varied on this instance
@@ -172,7 +186,7 @@ public class TestBaseAlgorithm {
      * c = 4 , D = 0
      * */
     @Test
-    public void connectedCompleteGraphTestVaryComponentSize(){
+    public void varyComponentSizeConnectedCompleteGraphTest(){
         Graph<Integer, DefaultEdge> sample = new SimpleGraph<>(DefaultEdge.class) ;
         for(int counter = 0 ; counter<4 ; counter++){ sample.addVertex(counter); }
 
@@ -194,18 +208,28 @@ public class TestBaseAlgorithm {
         preComputedSolutions.add(0) ;
 
         for(int counter = 0 ; counter<=sample.vertexSet().size() ; counter++){
-            assertEquals((int)preComputedSolutions.get(counter) , Solution.computeSolution(sample ,counter ));
+            assertEquals((int)preComputedSolutions.get(counter) , Solution.computeSolution(sample ,counter));
         }
 
     }
 
 
     /**
-     *
+     * BiClique = a complete bipartite graph
+     * In this case, the graph is composed of 6 vertices labelled between (0 - 5) inclusive
+     * of which first 3 vertices and last three vertices represent the two sides of the graph
+     * Both set sizes in the bipartite graph are equal
      *
      * */
-    public void ConnectedBipartiteGraph(){
-
+    public void varyComponentSizeBiCliqueWithEqualSetSizes(){
+        SimpleGraph<Integer, DefaultEdge> graph = new SimpleGraph<>(DefaultEdge.class);
+        addVertex(graph , 6) ;
+        for(int counter = 0 ; counter< 3 ; counter++){
+            for(int counter2 = 3 ; counter2<6 ; counter2++){
+                graph.addEdge(counter , counter2);
+            }
+        }
+        ArrayList<Integer> precomputedMinimumDeletionSets = new ArrayList<>() ;
     }
 
 
