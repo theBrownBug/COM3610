@@ -18,8 +18,8 @@ public class TestBaseAlgorithm {
      *  8 vertices
      *  6 edges
      *
-     *  0 --- 1
-     *  2-3-4-5-6-7
+     *  0 - 1 ,
+     *  2 - 3 - 4 - 5 - 6 - 7
      *
      * */
     // test 1
@@ -52,9 +52,8 @@ public class TestBaseAlgorithm {
      * same graph for test case 3 and 4
      * 3 vertices
      *  0 - 1 - 2
-     *
      *  when c = 2 , only one element should be deleted
-     *  when c = 1 ,
+     *
      * */
     @Test
     public void TestTwoPositive(){
@@ -67,20 +66,23 @@ public class TestBaseAlgorithm {
     }
 
     /**
-     * Test case 4 -- Not working?? Figure out
-     * change c while keeping the graph same
+     * Graph :
      * 0-1-2
      *
+     * for c = 1 (for each component to have size = 1 (c=1) , only vertex (1) has to be deleted)
      *  */
     @Test
     public void TestTwoPositiveTwo(){
         Graph<Integer , DefaultEdge> sampleGraph = new SimpleGraph<>(DefaultEdge.class);
-        TestBaseAlgorithm.addVertex(sampleGraph , 3);
+        for(int counter = 0 ; counter< 3 ; counter++){
+            addVertex(sampleGraph , counter);
+        }
+        //TestBaseAlgorithm.addVertex(sampleGraph , 3);
         for(int counter = 0 ; counter < sampleGraph.vertexSet().size() - 1 ;counter++){
             sampleGraph.addEdge(counter , counter +1) ;
         }
 
-        // should be 2
+
         assertEquals(1, Solution.computeSolution(sampleGraph, 1));
     }
 
@@ -88,7 +90,7 @@ public class TestBaseAlgorithm {
     @Test
 
     /**
-     * graph:
+     * graph: ( ',' represents disconnected components )
      * 0 - 1 - 2 - 3 ,
      * 4 - 5 - 6 - 7
      *
@@ -135,7 +137,7 @@ public class TestBaseAlgorithm {
      * c = 4 , D = 0 (if c = vertex set size(in this case 4) , the deletion set should be empty)
      * */
     @Test
-    public void varyComponentSizeUseOneInstanceOfConnectedGraph(){
+    public void varyComponentSizeUseOneInstanceOfConnectedGraphAndOrientation(){
         // make a simple linear graph
         Graph<Integer , DefaultEdge> sample = new SimpleGraph<>(DefaultEdge.class) ;
         /*
@@ -156,7 +158,55 @@ public class TestBaseAlgorithm {
         }
     }
 
+    /**
+     * In this case, the graph is complete, connected and contains vertices(0 , 1 , 2 , 3)
+     * The component size has been varied on this instance
+     * Key:
+     *  Observationally, the component sizes are inversely linearly proportional to the Deletion set size
+     *
+     * Here are the precomputed minimum deletion set sizes for varied values of c(component sizes)
+     * c = 0 , D = 4
+     * c = 1 , D = 3
+     * c = 2 , D = 2
+     * c = 3 , D = 1
+     * c = 4 , D = 0
+     * */
+    @Test
+    public void connectedCompleteGraphTestVaryComponentSize(){
+        Graph<Integer, DefaultEdge> sample = new SimpleGraph<>(DefaultEdge.class) ;
+        for(int counter = 0 ; counter<4 ; counter++){ sample.addVertex(counter); }
 
+        // make a Complete graph
+        for(int counter = 0 ; counter< sample.vertexSet().size() ; counter++){
+            for(int counter2 = 0; counter2<sample.vertexSet().size() ; counter2++){
+                if(counter!=counter2){
+                    sample.addEdge(counter , counter2) ;
+                }
+            }
+        }
+
+        /* precomputed values of minimum deletion sets */
+        ArrayList<Integer> preComputedSolutions = new ArrayList<>() ;
+        preComputedSolutions.add(4) ;
+        preComputedSolutions.add(3) ;
+        preComputedSolutions.add(2) ;
+        preComputedSolutions.add(1) ;
+        preComputedSolutions.add(0) ;
+
+        for(int counter = 0 ; counter<=sample.vertexSet().size() ; counter++){
+            assertEquals((int)preComputedSolutions.get(counter) , Solution.computeSolution(sample ,counter ));
+        }
+
+    }
+
+
+    /**
+     *
+     *
+     * */
+    public void ConnectedBipartiteGraph(){
+
+    }
 
 
 
