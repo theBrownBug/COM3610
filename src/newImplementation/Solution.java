@@ -17,9 +17,6 @@ public class Solution {
 
     /**
      * Look at methods to duplicate graphs ()
-     *
-     *
-     *
      * */
 
     public static int computeSolution(Graph<Integer, DefaultEdge> graph, int c) {
@@ -96,8 +93,6 @@ public class Solution {
     }
     /**
      * generates a predefined graph
-     *
-     *
      * */
     public static Graph<Integer, DefaultEdge> generateGraph() {
         Graph<Integer, DefaultEdge> sampleGraph = new SimpleGraph<>(DefaultEdge.class);

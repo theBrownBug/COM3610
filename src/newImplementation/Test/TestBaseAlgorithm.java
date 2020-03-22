@@ -216,20 +216,35 @@ public class TestBaseAlgorithm {
 
     /**
      * BiClique = a complete bipartite graph
-     * In this case, the graph is composed of 6 vertices labelled between (0 - 5) inclusive
-     * of which first 3 vertices and last three vertices represent the two sides of the graph
+     * In this case, the graph is composed of 6 vertices labelled between (0 - 3) inclusive
+     * of which first 2 vertices and last 2 vertices represent the two sides of the graph
      * Both set sizes in the bipartite graph are equal
      *
+     *
      * */
+    @Test
     public void varyComponentSizeBiCliqueWithEqualSetSizes(){
         SimpleGraph<Integer, DefaultEdge> graph = new SimpleGraph<>(DefaultEdge.class);
-        addVertex(graph , 6) ;
-        for(int counter = 0 ; counter< 3 ; counter++){
-            for(int counter2 = 3 ; counter2<6 ; counter2++){
+        addVertex(graph , 4) ;
+        for(int counter = 0 ; counter< 2 ; counter++){
+            for(int counter2 = 2 ; counter2<4 ; counter2++){
                 graph.addEdge(counter , counter2);
             }
         }
         ArrayList<Integer> precomputedMinimumDeletionSets = new ArrayList<>() ;
+        precomputedMinimumDeletionSets.add(4);
+        precomputedMinimumDeletionSets.add(2);
+        precomputedMinimumDeletionSets.add(2);
+        precomputedMinimumDeletionSets.add(1);
+        precomputedMinimumDeletionSets.add(0);
+
+        for(int counter = 0 ; counter< precomputedMinimumDeletionSets.size() ; counter++){
+            assertEquals((int)precomputedMinimumDeletionSets.get(counter) , Solution.computeSolution(graph , counter));
+        }
+
+
+
+
     }
 
 
