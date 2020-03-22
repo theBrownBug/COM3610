@@ -241,11 +241,10 @@ public class TestBaseAlgorithm {
         for(int counter = 0 ; counter< precomputedMinimumDeletionSets.size() ; counter++){
             assertEquals((int)precomputedMinimumDeletionSets.get(counter) , Solution.computeSolution(graph , counter));
         }
-
-
-
-
     }
+
+
+
 
 
 
