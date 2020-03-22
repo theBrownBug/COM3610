@@ -5,6 +5,8 @@ import org.jgrapht.graph.DefaultEdge;
 import org.jgrapht.graph.SimpleGraph;
 import org.junit.Test;
 
+import java.io.*;
+import java.nio.file.Path;
 import java.util.ArrayList;
 
 import static org.junit.Assert.assertEquals ;
@@ -245,7 +247,56 @@ public class TestBaseAlgorithm {
 
 
 
+    @Test
+    public void masterSimulation() throws IOException {
+        File folder = new File("/Users/god_tm/Documents/GitHub/COM3610/sampleGraphs");
+        File[] listOfFiles = folder.listFiles();
+        ArrayList<Graph<Integer , DefaultEdge>> allGraphs = new ArrayList<>();
+        for (int i = 0; i < listOfFiles.length; i++) {
+            // only consider .edge files
+            if (listOfFiles[i].isFile() &&listOfFiles[i].getName().endsWith(".edge")) {
+                BufferedReader reader = new BufferedReader(new FileReader("/Users/god_tm/Documents/GitHub/COM3610/sampleGraphs/"+listOfFiles[i].getName())) ;
+                String r ;
+                int index = 0 ;
+                Graph<Integer , DefaultEdge> graph = new SimpleGraph<>(DefaultEdge.class) ;
+                while((r = reader.readLine())!= null){
+                    if (index==0){
+                        String[] graphDetails = r.split("\\s+");
+                        for(int counter = 1 ; counter<= Integer.parseInt(graphDetails[2]) ; counter++){
+                            graph.addVertex(counter);
+                        }
+                    } else{
+                        String[] edgeData = r.split("\\s+");
+                        try{
+                            Integer source = Integer.parseInt(edgeData[1]) ;
+                            Integer destination = Integer.parseInt(edgeData[2]);
+                            graph.addEdge(Integer.parseInt(edgeData[1]), Integer.parseInt(edgeData[2]));
+                        }catch (Exception e){
+
+                        }
+
+                    }
+
+                    index++ ;
+                }
+
+                allGraphs.add(graph) ;
+            }
+        }
+
+        for(int counter = 0 ; counter< listOfFiles.length; counter++){
+            Graph<Integer , DefaultEdge> graph = allGraphs.get(counter);
+            int numberOfVertices = graph.vertexSet().size();
+            System.out.println(listOfFiles[counter].getName());
+            for(int componentSizes = 0 ; componentSizes<= numberOfVertices ; componentSizes++){
+                int minDeletionSet = Solution.computeSolution(graph , componentSizes) ;
+                System.out.println("D =" + minDeletionSet + " , C = "+ componentSizes);
+            }
+            System.out.println();
+            System.out.println();
+        }
 
 
+    }
 
 }
