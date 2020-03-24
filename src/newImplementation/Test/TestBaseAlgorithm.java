@@ -6,13 +6,17 @@ import org.jgrapht.graph.SimpleGraph;
 import org.junit.Test;
 
 import java.io.*;
-import java.nio.file.Path;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashMap;
 
 import static org.junit.Assert.assertEquals ;
 import static org.junit.Assert.assertNotEquals;
 
 public class TestBaseAlgorithm {
+
+    String pathName = "/Users/god_tm/Documents/GitHub/COM3610/sampleGraphs";
 
     /**
      * Same graph for test case 1 and 2
@@ -249,13 +253,15 @@ public class TestBaseAlgorithm {
 
     @Test
     public void masterSimulation() throws IOException {
-        File folder = new File("/Users/god_tm/Documents/GitHub/COM3610/sampleGraphs");
+        File folder = new File(pathName);
         File[] listOfFiles = folder.listFiles();
         ArrayList<Graph<Integer , DefaultEdge>> allGraphs = new ArrayList<>();
+        HashMap<Graph , String> map = new HashMap<>() ;
+
         for (int i = 0; i < listOfFiles.length; i++) {
             // only consider .edge files
             if (listOfFiles[i].isFile() &&listOfFiles[i].getName().endsWith(".edge")) {
-                BufferedReader reader = new BufferedReader(new FileReader("/Users/god_tm/Documents/GitHub/COM3610/sampleGraphs/"+listOfFiles[i].getName())) ;
+                BufferedReader reader = new BufferedReader(new FileReader(pathName + "/"+listOfFiles[i].getName())) ;
                 String r ;
                 int index = 0 ;
                 Graph<Integer , DefaultEdge> graph = new SimpleGraph<>(DefaultEdge.class) ;
@@ -268,35 +274,124 @@ public class TestBaseAlgorithm {
                     } else{
                         String[] edgeData = r.split("\\s+");
                         try{
-                            Integer source = Integer.parseInt(edgeData[1]) ;
-                            Integer destination = Integer.parseInt(edgeData[2]);
                             graph.addEdge(Integer.parseInt(edgeData[1]), Integer.parseInt(edgeData[2]));
-                        }catch (Exception e){
-
-                        }
-
+                        }catch (Exception e){}
                     }
-
                     index++ ;
                 }
-
+                map.put(graph , listOfFiles[i].getName()) ;
                 allGraphs.add(graph) ;
+                reader.close();
             }
         }
 
-        for(int counter = 0 ; counter< listOfFiles.length; counter++){
+        // sort graphs by number of vertices
+        Collections.sort(allGraphs , new SortByVertexSetSize());
+
+        // check if graphs are sorted
+        /*
+        for(Graph graph : allGraphs){
+            System.out.println(graph.vertexSet().size() + " =  " +map.get(graph) );
+            System.out.println();
+        }
+        */
+
+
+        // create a new File and output the entries
+        File output = new File(pathName+"/"+"output.txt") ;
+        BufferedWriter writer = new BufferedWriter(new FileWriter(output)) ;
+        String head = "GraphName            Vertices    Edges       ComponentSize   DeletionSetSize    TimeTaken(MicroSeconds)" ;
+        writer.write(head);
+        writer.newLine();
+
+
+        for(int counter = 0 ; counter< allGraphs.size(); counter++){
             Graph<Integer , DefaultEdge> graph = allGraphs.get(counter);
             int numberOfVertices = graph.vertexSet().size();
-            System.out.println(listOfFiles[counter].getName());
+            int numberOfEdges = graph.edgeSet().size() ;
+            //System.out.println(listOfFiles[counter].getName());
+            // get the graph name
+            String graphName = map.get(graph).split("\\.")[0];
+            int line = 0 ;
+            writer.write(graphName + "              "+numberOfVertices+"            "+numberOfEdges+"           ");
+
             for(int componentSizes = 0 ; componentSizes<= numberOfVertices ; componentSizes++){
+                double startTime = System.nanoTime() ;
                 int minDeletionSet = Solution.computeSolution(graph , componentSizes) ;
-                System.out.println("D =" + minDeletionSet + " , C = "+ componentSizes);
+                double timeTaken = (System.nanoTime() - startTime)/1000 ;
+                if(line==0) {
+                    writer.write("      "+componentSizes + "           " + minDeletionSet + "               " + timeTaken);
+                }else {
+                    writer.write("                                                      "
+                            +componentSizes + "           " + minDeletionSet + "               " + timeTaken);
+                }
+                line++ ;
+                writer.newLine();
             }
-            System.out.println();
-            System.out.println();
+            writer.newLine();
+
         }
+
+        writer.close();
 
 
     }
 
+
+     @Test
+     public void sampleSimulation() throws IOException{
+        BufferedReader reader = new BufferedReader(new FileReader(pathName+"/"+"3x3-grid.edge")) ;
+        String r ;
+        int index = 0 ;
+        Graph<Integer , DefaultEdge> graph = new SimpleGraph<>(DefaultEdge.class) ;
+        while((r = reader.readLine())!= null){
+                if (index==0){
+                    String[] graphDetails = r.split("\\s+");
+                    for(int counter = 1 ; counter<= Integer.parseInt(graphDetails[2]) ; counter++){
+                        graph.addVertex(counter);
+                    }
+                } else{
+                    String[] edgeData = r.split("\\s+");
+                    try{
+                        graph.addEdge(Integer.parseInt(edgeData[1]), Integer.parseInt(edgeData[2]));
+                    }catch (Exception e){}
+                }
+                index++ ;
+        }
+        reader.close();
+        File output = new File(pathName+"/"+"sampleoutput.txt") ;
+        BufferedWriter writer = new BufferedWriter(new FileWriter(output)) ;
+        String head = "GraphName            Vertices    Edges       ComponentSize   DeletionSetSize    TimeTaken(MicroSeconds)" ;
+        writer.write(head);
+        writer.newLine();
+
+        int numberOfVertices = graph.vertexSet().size();
+        int numberOfEdges = graph.edgeSet().size() ;
+        String graphName = "3x3-grid.egde".split("\\.")[0] ;
+        writer.write(graphName + "              "+numberOfVertices+"            "+numberOfEdges+"           ");
+
+        int line = 0 ;
+        for(int componentSizes = 0 ; componentSizes<= numberOfVertices ; componentSizes++){
+            double startTime = System.nanoTime() ;
+            int minDeletionSet = Solution.computeSolution(graph , componentSizes) ;
+            double timeTaken = (System.nanoTime() - startTime)/1000 ;
+            if(line==0) {
+                writer.write("      "+componentSizes + "           " + minDeletionSet + "               " + timeTaken);
+            }else{
+                writer.write("                                                      "
+                        +componentSizes + "           " + minDeletionSet + "               " + timeTaken);
+            }
+            line++ ;
+            writer.newLine();
+        }
+        writer.close();
+
+    }
+
+}
+class SortByVertexSetSize implements Comparator<Graph> {
+    @Override
+    public int compare(Graph o1, Graph o2) {
+        return o1.vertexSet().size() - o2.vertexSet().size() ;
+    }
 }

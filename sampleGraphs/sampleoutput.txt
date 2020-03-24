@@ -1,0 +1,11 @@
+GraphName            Vertices    Edges       ComponentSize   DeletionSetSize    TimeTaken(MicroSeconds)
+3x3-grid              9            12                 0           9               1700.627
+                                                      1           4               54234.376
+                                                      2           4               135121.694
+                                                      3           3               110325.062
+                                                      4           3               157149.102
+                                                      5           3               584989.327
+                                                      6           2               79949.466
+                                                      7           2               7498.358
+                                                      8           1               843.72
+                                                      9           0               33.32
