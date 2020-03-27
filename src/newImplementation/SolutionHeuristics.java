@@ -102,95 +102,22 @@ public class SolutionHeuristics {
             if(graph.vertexSet().size()<c){
                 return null ;
             }else{
-                int counter= 0 ;
-                List<Integer> toReturn = new ArrayList<>() ;
-
-                // find the first element in the graph(smallest int according to our labelling ) to start dfs on
-                //Integer min = Integer.MAX_VALUE ;
-                //for (Integer i: graph.vertexSet()){ if(i<min){min = i ;}}
-                HashMap<Integer , Integer> vertexAndDegreeMap = new HashMap<>() ;
-
-                // to make the working independent of the vertex marking start from 0
-                int minVertexNumber = Integer.MAX_VALUE ;
-                int maxVertexNumber = Integer.MIN_VALUE ;
-
-                for(Integer vertex : graph.vertexSet()){
-                    if(vertex<minVertexNumber){ minVertexNumber = vertex ; }
-                    if(vertex>maxVertexNumber){ maxVertexNumber = vertex ; }
-                }
-
-                // initialise the map
-                for(int vertex = minVertexNumber ; vertex<=maxVertexNumber ; vertex++){ vertexAndDegreeMap.put(vertex , 0) ; }
-
-                // get the degrees of all vertices
-                //O(V^2)
-                for(int index = minVertexNumber ; index<=maxVertexNumber ; index++){
-                    for(int index2 = index; index2<=maxVertexNumber ; index2++){
-                        if(graph.containsEdge(index , index2)){
-                            vertexAndDegreeMap.put(index , vertexAndDegreeMap.get(index) + 1) ;
-                        }
-                    }
-                }
-
-                vertexAndDegreeMap = SolutionHeuristics.sortByDegree(vertexAndDegreeMap) ;
-
-                // takes care of all possible starting points with the highest degree some of which might not have c connected elements
-                LinkedList<Integer> listOfVerticesWithHighestDegree = new LinkedList<>() ;
-
-                int highestDegree= Integer.MIN_VALUE ;
-                for(Integer key: vertexAndDegreeMap.keySet()){
-                    if(highestDegree>vertexAndDegreeMap.get(key)){highestDegree = vertexAndDegreeMap.get(key) ;}
-                }
-                for(Integer vertex: vertexAndDegreeMap.keySet()){
-                    if(vertexAndDegreeMap.get(vertex)==highestDegree){
-                        listOfVerticesWithHighestDegree.add(vertex) ;
-                    }
-                }
-
-
-
-                HashMap<Integer , Integer> vertexAndLevelMap = SolutionHeuristics.vertexAndLevelMap(graph , listOfVerticesWithHighestDegree.get(0)) ;
-
-                // since the this graph is already connected, we do not have to search for every
-                Iterator<Integer> dfsIterator = new DepthFirstIterator<>(graph, listOfVerticesWithHighestDegree.get(0)) ;
-                while(dfsIterator.hasNext()){
-                    Integer i = dfsIterator.next() ;
-
-                    if(counter<c){
-                        toReturn.add(i);
-                        counter++ ;
-                    }
-                    else{
-                        break ;
-                    }
-                }
+                List<Integer> toReturn = getConnectedVertices(graph, c) ;
                 // mod
                 if(toReturn.size()<c){return null; }
                 return (ArrayList<Integer>) toReturn ;
             }
-        }else{
+        }
+        else{
 
             BiconnectivityInspector<Integer , DefaultEdge> inspector = new BiconnectivityInspector(graph);
             for(Graph<Integer , DefaultEdge> g : inspector.getConnectedComponents()){
                 if(g.vertexSet().size()>c){
-                    int counter= 0 ;
-                    List<Integer> toReturn = new ArrayList<>() ;
-                    Iterator<Integer> dfsIterator = new DepthFirstIterator<>(graph) ;
-                    while(dfsIterator.hasNext()){
-                        Integer i = dfsIterator.next() ;
-                        if(counter<c){
-                            toReturn.add(i);
-                            counter++;
-                        }
-                        else{
-                            break ;
-                        }
-                    }
-                    return (ArrayList<Integer>) toReturn;
+                    return SolutionHeuristics.getConnectedVertices(graph , c) ;
                 }
-                else{
-                    return null ; // the size of array is small than c , trivial solution exists
-                }
+                // why??
+                else{ return null ; // the size of array is small than c , trivial solution exists
+                     }
             }
         }
         return null ;
@@ -258,8 +185,16 @@ public class SolutionHeuristics {
     }
 
 
+
+
+
+
+
+
+
+
     public static HashMap<Integer, Integer> vertexAndLevelMap(Graph<Integer , DefaultEdge> graph,
-                                                       Integer sourceVertex){
+                                                              Integer sourceVertex){
         int minVertex = Integer.MAX_VALUE ;
         int maxVertex = Integer.MIN_VALUE ;
         for(Integer i: graph.vertexSet()){
@@ -283,42 +218,10 @@ public class SolutionHeuristics {
 
     }
 
-    public void DFS(Graph<Integer , DefaultEdge> graph, Integer source){
-        Boolean[] visited = new Boolean[graph.vertexSet().size()] ;
-        for(Boolean b: visited){ b = false ;}
-
-    }
 
 
-    public void DFSUtil(Graph<Integer , DefaultEdge> graph ,
-                        Boolean[]visited , int source ,
-                        int c , Set<Integer> currentVertices,
-                        HashMap<Integer, Integer> vertexAndDegreeMap
-                        ){
-        if(currentVertices.size()>=c){
-            return;
-        }
-        currentVertices.add(source) ;
-        visited[source] = true;
 
 
-        Iterator<Integer> neighboursOfChosenNeighbourIt = Graphs.neighborListOf(graph , source).listIterator() ;
-        while(neighboursOfChosenNeighbourIt.hasNext()){
-            if(currentVertices.size()>=c){ return; }
-
-            Set<Integer> setOfNeigbours = Graphs.neighborSetOf(graph , source) ;
-            int maxDegreeNext = 0 ;
-            // get the neighbour with the highest degree
-            for(Integer neighbour: setOfNeigbours){
-                if(vertexAndDegreeMap.get(neighbour)>maxDegreeNext){
-                    maxDegreeNext = neighbour ;
-                }
-            }
-
-        }
-
-
-    }
 
 
     // only for undirected graphs
@@ -349,6 +252,14 @@ public class SolutionHeuristics {
         return vertexDegreeMap ;
     }
 
+
+
+
+
+
+
+
+
     public static ArrayList<Integer> getConnectedVertices(Graph<Integer, DefaultEdge> graph, int desiredNumberOfConnected){
         Boolean[] visited = new Boolean[graph.vertexSet().size()] ;
         HashMap<Integer , Integer> vertexDegreeMap = Experimentation.getVertexAndDegreeMap(graph) ;
@@ -374,6 +285,13 @@ public class SolutionHeuristics {
 
 
     }
+
+
+
+
+
+
+
 
     public static ArrayList<Integer> getConnectedVerticesUtil(Graph<Integer, DefaultEdge> graph,
                                                               int source,
