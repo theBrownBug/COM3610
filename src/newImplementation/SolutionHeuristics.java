@@ -25,7 +25,7 @@ public class SolutionHeuristics {
                 //return sum;
                 return 0;
             }
-            List<Integer> vertexList = returnConnectedVertices(graph , c +1) ;
+            List<Integer> vertexList = getConnectedVertices(graph , c +1) ;
             int min = Integer.MAX_VALUE;
             if(vertexList!=null) {
                 for (Integer i : vertexList) {
@@ -92,36 +92,6 @@ public class SolutionHeuristics {
         return inspector.isConnected();
     }
 
-
-    /**
-     * c = c+1 ;
-     *
-     * */
-    public static ArrayList<Integer> returnConnectedVertices(Graph<Integer , DefaultEdge> graph, int c){
-        if(isConnected(graph)){
-            if(graph.vertexSet().size()<c){
-                return null ;
-            }else{
-                List<Integer> toReturn = getConnectedVertices(graph, c) ;
-                // mod
-                if(toReturn.size()<c){return null; }
-                return (ArrayList<Integer>) toReturn ;
-            }
-        }
-        else{
-
-            BiconnectivityInspector<Integer , DefaultEdge> inspector = new BiconnectivityInspector(graph);
-            for(Graph<Integer , DefaultEdge> g : inspector.getConnectedComponents()){
-                if(g.vertexSet().size()>c){
-                    return SolutionHeuristics.getConnectedVertices(graph , c) ;
-                }
-                // why??
-                else{ return null ; // the size of array is small than c , trivial solution exists
-                     }
-            }
-        }
-        return null ;
-    }
 
 
 
@@ -259,32 +229,111 @@ public class SolutionHeuristics {
 
 
 
-
-
-    public static ArrayList<Integer> getConnectedVertices(Graph<Integer, DefaultEdge> graph, int desiredNumberOfConnected){
-        Boolean[] visited = new Boolean[graph.vertexSet().size()] ;
-        HashMap<Integer , Integer> vertexDegreeMap = SolutionHeuristics.getVertexAndDegreeMap(graph) ;
-        ArrayList<Integer> toBeReturned = new ArrayList<>() ;
+    public static ArrayList<Integer> getConnectedVertices(Graph<Integer, DefaultEdge> graph, int desiredNumberOfConnected) {
+        // to prevent Index out of bounds error// just make the size of boolean array from 0 to maxVertex number ;
+        //some of the vertices will always remain false (as they are not in the graph) i.e case when
+        // the starting vertex(min) is offset from 0 by some amount
+        boolean[] visited = new boolean[Collections.max(graph.vertexSet()) + 1];
+        HashMap<Integer, Integer> vertexDegreeMap = SolutionHeuristics.getVertexAndDegreeMap(graph);
+        ArrayList<Integer> toBeReturned = new ArrayList<>();
         //choose a random vertex
-        int maximumDegreeNeighbour  = (Integer) graph.vertexSet().toArray()[(int)(Math.random()*graph.vertexSet().size())];
-        for(Boolean b:visited){b  = false ; }
-        for(int vertices:vertexDegreeMap.keySet()){
-            if(vertexDegreeMap.get(vertices)>maximumDegreeNeighbour){
-                maximumDegreeNeighbour =vertices ;
+        int maximumDegreeNeighbour = (Integer) graph.vertexSet().toArray()[(int) (Math.floor((Math.random() * graph.vertexSet().size())))];
+        for (boolean b : visited) {
+            b = false;
+        }
+        for (int vertices : vertexDegreeMap.keySet()) {
+            if (vertexDegreeMap.get(vertices) > vertexDegreeMap.get(maximumDegreeNeighbour)) {
+                maximumDegreeNeighbour = vertices;
             }
         }
 
-        return getConnectedVerticesUtil(graph ,
-                maximumDegreeNeighbour ,
+        getConnectedVerticesUtil(graph,
+                maximumDegreeNeighbour,
                 desiredNumberOfConnected,
-                vertexDegreeMap ,
-                0 ,
-                toBeReturned ,
+                vertexDegreeMap,
+                0,
+                toBeReturned,
                 visited
-        ) ;
+        );
+
+        return toBeReturned;
 
 
+    }
 
+
+    public static ArrayList<Integer> getConnectedVerticesUtil(Graph<Integer, DefaultEdge> graph,
+                                                              int source,
+                                                              int desiredNumberOfConnected,
+                                                              HashMap<Integer, Integer> vertexDegreeMap,
+                                                              int currentConnected,
+                                                              ArrayList<Integer> allVerticesToBeReturned,
+                                                              boolean[] visited) {
+        if (currentConnected < desiredNumberOfConnected) {
+            visited[source] = true;
+            allVerticesToBeReturned.add(source);
+            Set<Integer> set = Graphs.neighborSetOf(graph, source);
+
+            for (int counter = 0; counter < set.size(); counter++) {
+                //choose a random vertex
+                int maximumDegreeNeighbour = (Integer) set.toArray()[(int) Math.random() * set.size()];
+                Iterator<Integer> setIt = set.iterator();
+
+                while (setIt.hasNext()) {
+                    Integer neighbours = setIt.next();
+
+                    /*
+                     * if there is no vertex which has degree higher or equal to current vertices that has not been visited, then
+                     *  the maximumDegreeVertex is not changed
+                     *
+                     * */
+                    if (!visited[neighbours] && (vertexDegreeMap.get(neighbours) >= vertexDegreeMap.get(maximumDegreeNeighbour))) {
+                        maximumDegreeNeighbour = neighbours;
+                    }
+
+
+                    // check if maximumDegreeNeighbour is already present (i.e. it is not updated above) because it might have the highest degree
+                    // and might be visited
+                    if (visited[maximumDegreeNeighbour]) {
+                        maximumDegreeNeighbour = getNextBestNeighbour(graph ,
+                                source , visited , Graphs.neighborSetOf(graph , maximumDegreeNeighbour).size()) ;
+                    }
+
+                }
+
+
+                if (!visited[counter]) {
+                    return getConnectedVerticesUtil(graph,
+                            maximumDegreeNeighbour,
+                            desiredNumberOfConnected,
+                            vertexDegreeMap,
+                            currentConnected + 1,
+                            allVerticesToBeReturned,
+                            visited);
+                }
+            }
+        }
+
+        return allVerticesToBeReturned;
+
+    }
+
+
+    public static int getNextBestNeighbour(Graph<Integer, DefaultEdge> graph, int source, boolean[] visited, int currentDegree) {
+
+        Set<Integer> set  = Graphs.neighborSetOf(graph , source) ;
+        int counter = currentDegree ;
+        while(counter>0){
+            Iterator<Integer> iterator= set.iterator() ;
+            while(iterator.hasNext()){
+                int i = iterator.next() ;
+                if(!visited[i] && Graphs.neighborSetOf(graph ,i).size()==counter){
+                    return i ;
+                }
+            }
+            counter-- ;
+        }
+        return Integer.MIN_VALUE ;
     }
 
 

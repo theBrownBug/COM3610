@@ -328,10 +328,10 @@ public class TestBaseAlgorithm {
                 line++ ;
                 writer.newLine();
             }
+
             writer.newLine();
 
         }
-
         writer.close();
 
 
