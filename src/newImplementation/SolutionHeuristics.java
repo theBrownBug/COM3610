@@ -240,6 +240,7 @@ public class SolutionHeuristics {
         for(int counter = minVertex ; counter<maxVertex ; counter++){
             for(int counter2 =counter ; counter2<=maxVertex ;  counter2++){
                 if(graph.containsEdge(counter , counter2)){
+
                     /*
                      * because the graph looks at only one vertex for every edge visited , more efficient,  add
                      *  degree to source and destination
@@ -262,7 +263,7 @@ public class SolutionHeuristics {
 
     public static ArrayList<Integer> getConnectedVertices(Graph<Integer, DefaultEdge> graph, int desiredNumberOfConnected){
         Boolean[] visited = new Boolean[graph.vertexSet().size()] ;
-        HashMap<Integer , Integer> vertexDegreeMap = Experimentation.getVertexAndDegreeMap(graph) ;
+        HashMap<Integer , Integer> vertexDegreeMap = SolutionHeuristics.getVertexAndDegreeMap(graph) ;
         ArrayList<Integer> toBeReturned = new ArrayList<>() ;
         //choose a random vertex
         int maximumDegreeNeighbour  = (Integer) graph.vertexSet().toArray()[(int)(Math.random()*graph.vertexSet().size())];
