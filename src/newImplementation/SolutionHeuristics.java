@@ -294,7 +294,7 @@ public class SolutionHeuristics {
 
                     // check if maximumDegreeNeighbour is already present (i.e. it is not updated above) because it might have the highest degree
                     // and might be visited
-                    if (visited[maximumDegreeNeighbour]) {
+                    if (visited[maximumDegreeNeighbour] && (vertexDegreeMap.get(neighbours) >= vertexDegreeMap.get(maximumDegreeNeighbour))) {
                         maximumDegreeNeighbour = getNextBestNeighbour(graph ,
                                 source , visited , Graphs.neighborSetOf(graph , maximumDegreeNeighbour).size()) ;
                     }
@@ -333,7 +333,7 @@ public class SolutionHeuristics {
             }
             counter-- ;
         }
-        return Integer.MIN_VALUE ;
+        return source;
     }
 
 
