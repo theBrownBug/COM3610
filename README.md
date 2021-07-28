@@ -1,6 +1,6 @@
 # COM3610 Dissertation (Deletion Into Small Components Problem)
 
-##[Link to Final Report](https://www.dropbox.com/s/53v9hf1tmj4nqq6/The_University_of_Sheffield__Computer_Science_Report.pdf?dl=0)
+## [Link to Final Report](https://www.dropbox.com/s/53v9hf1tmj4nqq6/The_University_of_Sheffield__Computer_Science_Report.pdf?dl=0)
 
 ## Abstract
 This research project aims to implement a Fixed Parameterized Complexity based algorithm
@@ -11,6 +11,6 @@ in G\D has size at most c. This problem is NP complete. It has applications in t
 computer network vulnerability and AI planning.
 
 
-##PseudoCode Of Algorithms Implemented
+## PseudoCode Of Algorithms Implemented
 
 
