@@ -13,4 +13,5 @@ computer network vulnerability and AI planning.
 
 ## PseudoCode Of Algorithms Implemented
 
-![alt text](https://github.com/theBrownbug/COM3610/blob/master/images/1.png)
+### Simple Algorithm
+![Simple Algorithm](https://github.com/theBrownbug/COM3610/blob/master/images/3.png)
