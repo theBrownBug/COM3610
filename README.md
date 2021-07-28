@@ -13,5 +13,11 @@ computer network vulnerability and AI planning.
 
 ## PseudoCode Of Algorithms Implemented
 
-### Simple Algorithm
+### Simple Algorithm PseudoCode (without Heuristical Improvement)
 ![Simple Algorithm](https://github.com/theBrownbug/COM3610/blob/master/images/3.png)
+
+### Simple Kernelised Algorithm
+![Kernelised Algorithm](https://github.com/theBrownbug/COM3610/blob/master/images/2.png)
+
+### Algorithm with Symmetry Breaking
+![Kernelised Algorithm](https://github.com/theBrownbug/COM3610/blob/master/images/1.png)
